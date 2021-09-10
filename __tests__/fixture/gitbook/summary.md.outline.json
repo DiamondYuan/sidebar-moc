@@ -101,6 +101,27 @@
       ],
       "text": "Part I",
       "url": "part1/README.md"
+    },
+    {
+      "type": "heading",
+      "depth": 1,
+      "startPoint": {
+        "line": 16,
+        "column": 1
+      },
+      "children": [],
+      "text": "Part II",
+      "url": ""
+    },
+    {
+      "type": "treeNode",
+      "startPoint": {
+        "line": 18,
+        "column": 1
+      },
+      "children": [],
+      "text": "Part II",
+      "url": "part2/README.md"
     }
   ]
 }
