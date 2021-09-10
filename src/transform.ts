@@ -26,6 +26,7 @@ export function transformMdastToMocAst(
       depth: root.depth,
       startPoint: getStartPoint(root.position),
       children: transformChildren(root) as any,
+      ...getHeadingContent(root),
     };
   } else if (root.type === "listItem") {
     return {
@@ -82,4 +83,19 @@ function getListItemContent(
     }
   }
   return;
+}
+
+function getHeadingContent(
+  heading: Heading
+): undefined | { text?: string; url?: string } {
+  const linkItem: Link | null = select("link", heading) as Link;
+  if (linkItem) {
+    return {
+      text: mdastToString(linkItem),
+      url: linkItem.url,
+    };
+  }
+  return {
+    text: mdastToString(heading),
+  };
 }

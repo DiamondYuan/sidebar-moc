@@ -8,7 +8,8 @@
         "line": 1,
         "column": 1
       },
-      "children": []
+      "children": [],
+      "text": "Summary"
     },
     {
       "type": "heading",
@@ -17,7 +18,8 @@
         "line": 3,
         "column": 1
       },
-      "children": []
+      "children": [],
+      "text": "Part I"
     },
     {
       "type": "treeNode",
