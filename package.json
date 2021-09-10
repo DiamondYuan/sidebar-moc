@@ -5,6 +5,9 @@
   "repository": "git@github.com:DiamondYuan/sidebar-moc.git",
   "author": "DiamondYuan <admin@diamondyuan.com>",
   "license": "MIT",
+  "scripts": {
+    "test": "yarn jest __tests__/transform.spec.ts"
+  },
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",

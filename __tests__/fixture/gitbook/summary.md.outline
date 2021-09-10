@@ -1,7 +1,7 @@
 [root]
-  [heading-1] Summary
-  [heading-3] Part I
-  [treeNode] Part I
-      [treeNode] Writing is nice
-      [treeNode] GitBook is nice
-          [treeNode] GitBook is nice
+  [heading-1]  Summary
+  [heading-3]  Part I
+  [treeNode]  Part I  (part1/README.md)
+      [treeNode]  Writing is nice  (part1/README.md#writing)
+      [treeNode]  GitBook is nice  (part1/README.md#gitbook)
+          [treeNode]  GitBook is nice  (part1/README.md#gitbook)

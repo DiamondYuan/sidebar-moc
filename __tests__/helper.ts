@@ -14,7 +14,9 @@ function getHeader(root: OutlineRoot | OutlineContent) {
   if (root.type === "root") {
     return `[${root.type}]`;
   } else if (root.type === "heading") {
-    return `[${root.type}-${root.depth}] ${root.text}`;
+    return `[${root.type}-${root.depth}]  ${root.text}${
+      root.url ? `  (${root.url})` : ""
+    }`;
   }
-  return `[${root.type}] ${root.text}`;
+  return `[${root.type}]  ${root.text}${root.url ? `  (${root.url})` : ""}`;
 }
