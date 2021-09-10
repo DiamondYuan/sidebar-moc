@@ -1,6 +1,6 @@
 # Summary
 
-### Part I
+### [Part I](part1/README.md)
 
 - [Part I](part1/README.md)
   - [Writing is nice](part1/README.md#writing)

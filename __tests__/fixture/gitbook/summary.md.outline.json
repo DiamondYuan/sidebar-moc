@@ -19,7 +19,8 @@
         "column": 1
       },
       "children": [],
-      "text": "Part I"
+      "text": "Part I",
+      "url": "part1/README.md"
     },
     {
       "type": "treeNode",
