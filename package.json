@@ -13,6 +13,8 @@
     "remark-gfm": "^2.0.0",
     "remark-parse": "^10.0.0",
     "unified": "^10.1.0",
+    "unist-util-filter": "^4.0.0",
+    "unist-util-map": "^3.0.0",
     "unist-util-visit": "^4.0.0"
   }
 }
