@@ -3,5 +3,9 @@
   [heading-3]  Part I  (part1/README.md)
   [treeNode]  Part I  (part1/README.md)
       [treeNode]  Writing is nice  (part1/README.md#writing)
+      [treeNode]  undefined
+          [heading-2]  Header In ListItem
+          [treeNode]  ListItem Without Link
+          [treeNode]  
       [treeNode]  GitBook is nice  (part1/README.md#gitbook)
           [treeNode]  GitBook is nice  (part1/README.md#gitbook)

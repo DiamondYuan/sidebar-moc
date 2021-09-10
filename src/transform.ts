@@ -70,9 +70,13 @@ function transformChildren(
 function getListItemContent(
   listItem: ListItem
 ): undefined | { text?: string; url?: string } {
+  let firstChild = null;
   for (const item of listItem.children) {
     if (item.type === "list" || item.type === "heading") {
       return;
+    }
+    if (!firstChild) {
+      firstChild = item;
     }
     const linkItem: Link | null = select("link", item) as Link;
     if (linkItem) {
@@ -81,6 +85,11 @@ function getListItemContent(
         url: linkItem.url,
       };
     }
+  }
+  if (firstChild) {
+    return {
+      text: mdastToString(firstChild),
+    };
   }
   return;
 }

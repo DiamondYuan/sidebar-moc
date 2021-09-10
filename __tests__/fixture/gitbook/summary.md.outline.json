@@ -32,7 +32,7 @@
         {
           "type": "treeNode",
           "startPoint": {
-            "line": 6,
+            "line": 7,
             "column": 3
           },
           "children": [],
@@ -42,14 +42,52 @@
         {
           "type": "treeNode",
           "startPoint": {
-            "line": 7,
+            "line": 8,
+            "column": 3
+          },
+          "children": [
+            {
+              "type": "heading",
+              "depth": 2,
+              "startPoint": {
+                "line": 8,
+                "column": 5
+              },
+              "children": [],
+              "text": "Header In ListItem"
+            },
+            {
+              "type": "treeNode",
+              "startPoint": {
+                "line": 10,
+                "column": 5
+              },
+              "children": [],
+              "text": "ListItem Without Link"
+            },
+            {
+              "type": "treeNode",
+              "startPoint": {
+                "line": 11,
+                "column": 5
+              },
+              "children": [],
+              "text": "",
+              "url": ""
+            }
+          ]
+        },
+        {
+          "type": "treeNode",
+          "startPoint": {
+            "line": 13,
             "column": 3
           },
           "children": [
             {
               "type": "treeNode",
               "startPoint": {
-                "line": 8,
+                "line": 14,
                 "column": 5
               },
               "children": [],
