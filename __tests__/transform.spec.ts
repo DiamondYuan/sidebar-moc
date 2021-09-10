@@ -3,14 +3,19 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import path from "path";
-import fs from "fs";
+import { FixtureManager } from "fixture-manager";
+
+const fixtures = new FixtureManager({ path: path.join(__dirname, "fixture") });
 
 unified().use(remarkParse).use(remarkGfm).parse("");
-
-const summary = path.join(__dirname, "fixture", "summary.md");
-const summaryContent = fs.readFileSync(summary, "utf-8");
-
-it("", () => {
-  const mdast = unified().use(remarkParse).use(remarkGfm).parse(summaryContent);
-  expect(transformMdastToMocAst(mdast)).toMatchSnapshot();
+it("", async () => {
+  const gitbook = await fixtures.get("gitbook"); // Hello World
+  const mdast = unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .parse((await gitbook.readFile("summary.md"))!);
+  gitbook.writeFile(
+    "summary.md.outline.json",
+    JSON.stringify(transformMdastToMocAst(mdast), null, 2)
+  );
 });
