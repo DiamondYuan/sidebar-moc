@@ -5,7 +5,10 @@ import {
   Heading,
   List,
   ListItem,
+  Link,
 } from "mdast";
+import { select } from "unist-util-select";
+import { toString as mdastToString } from "mdast-util-to-string";
 
 export function transformMdastToMocAst(
   root: MdastContent | MdastRoot
@@ -29,6 +32,7 @@ export function transformMdastToMocAst(
       type: "treeNode",
       startPoint: getStartPoint(root.position),
       children: transformChildren(root) as any,
+      ...getListItemContent(root),
     };
   }
   return null;
@@ -60,4 +64,22 @@ function transformChildren(
     }
   }
   return children;
+}
+
+function getListItemContent(
+  listItem: ListItem
+): undefined | { text?: string; url?: string } {
+  for (const item of listItem.children) {
+    if (item.type === "list" || item.type === "heading") {
+      return;
+    }
+    const linkItem: Link | null = select("link", item) as Link;
+    if (linkItem) {
+      return {
+        text: mdastToString(linkItem),
+        url: linkItem.url,
+      };
+    }
+  }
+  return;
 }

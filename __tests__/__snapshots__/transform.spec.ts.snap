@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[` 1`] = `
+Object {
+  "children": Array [
+    Object {
+      "children": Array [],
+      "depth": 1,
+      "startPoint": Object {
+        "column": 1,
+        "line": 1,
+      },
+      "type": "heading",
+    },
+    Object {
+      "children": Array [],
+      "depth": 3,
+      "startPoint": Object {
+        "column": 1,
+        "line": 3,
+      },
+      "type": "heading",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "children": Array [],
+          "startPoint": Object {
+            "column": 3,
+            "line": 6,
+          },
+          "text": "Writing is nice",
+          "type": "treeNode",
+          "url": "part1/README.md#writing",
+        },
+        Object {
+          "children": Array [
+            Object {
+              "children": Array [],
+              "startPoint": Object {
+                "column": 5,
+                "line": 8,
+              },
+              "text": "GitBook is nice",
+              "type": "treeNode",
+              "url": "part1/README.md#gitbook",
+            },
+          ],
+          "startPoint": Object {
+            "column": 3,
+            "line": 7,
+          },
+          "text": "GitBook is nice",
+          "type": "treeNode",
+          "url": "part1/README.md#gitbook",
+        },
+      ],
+      "startPoint": Object {
+        "column": 1,
+        "line": 5,
+      },
+      "text": "Part I",
+      "type": "treeNode",
+      "url": "part1/README.md",
+    },
+  ],
+  "type": "root",
+}
+`;
