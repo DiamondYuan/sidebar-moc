@@ -1,3 +1,5 @@
+import vscode from "vscode";
+
 export interface Point {
   line: number;
   column: number;
@@ -25,4 +27,9 @@ export interface OutlineTreeNode {
 export interface OutlineRoot {
   type: "root";
   children: Array<OutlineContent>;
+}
+
+export interface OutlineDataWithUri {
+  uri: vscode.Uri;
+  data: OutlineRoot | OutlineContent;
 }

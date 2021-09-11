@@ -1,5 +1,5 @@
-import vscode, { Uri } from "vscode";
-import { OutlineContent, OutlineRoot, Point } from "../types";
+import vscode from "vscode";
+import { OutlineContent, OutlineRoot, OutlineDataWithUri } from "../types";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -7,13 +7,11 @@ import { sortRoot } from "../sort";
 import { transformMdastToMocAst } from "../transform";
 
 export class TocService {
-  public toc: OutlineRoot[];
-  private files: string[] = [];
+  public toc: OutlineDataWithUri[];
   private handler: () => void = () => {};
 
   constructor() {
     this.toc = [];
-    this.files = [];
   }
 
   onTocChange(handler: () => void): void {
@@ -21,29 +19,35 @@ export class TocService {
   }
 
   async updateConfig(files: string[]) {
-    const toc = [];
+    const toc: OutlineDataWithUri[] = [];
     for (const iterator of files) {
-      const root = (await loadAndParse(iterator)) as any as OutlineRoot;
-      toc.push(root);
+      const uri = vscode.Uri.file(iterator);
+      const root = (await loadAndParse(uri)) as any as OutlineRoot;
+      toc.push({
+        uri,
+        data: root,
+      });
     }
     this.toc = toc;
-    this.files = files;
     this.handler();
   }
 
   async updateToc(file: vscode.Uri) {
-    const index = this.files.indexOf(file.fsPath);
+    const index = this.toc.findIndex((p) => p.uri.fsPath === file.fsPath);
     if (index !== -1) {
-      const root = (await loadAndParse(file.fsPath)) as any as OutlineRoot;
-      this.toc[index] = root;
+      const root = await loadAndParse(file);
+      this.toc[index] = {
+        uri: file,
+        data: root,
+      };
       this.handler();
     }
   }
 }
 
-function loadAndParse(url: string): Promise<OutlineContent> {
+function loadAndParse(uri: vscode.Uri): Promise<OutlineContent> {
   return new Promise<OutlineContent>((r) => {
-    vscode.workspace.openTextDocument(vscode.Uri.file(url)).then((doc) => {
+    vscode.workspace.openTextDocument(uri).then((doc) => {
       const mdast = unified()
         .use(remarkParse)
         .use(remarkGfm)

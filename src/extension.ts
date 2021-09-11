@@ -1,77 +1,8 @@
 import { TocService } from "./services/toc-service";
-import { OutlineContent, Point } from "./types";
+import { Point, OutlineDataWithUri } from "./types";
 import vscode, { Uri } from "vscode";
-
-class TreeViewItem extends vscode.TreeItem {
-  constructor(
-    element: OutlineContent,
-    private context: vscode.ExtensionContext
-  ) {
-    super(
-      element.text ?? "NONE",
-      element.children.length === 0
-        ? vscode.TreeItemCollapsibleState.None
-        : vscode.TreeItemCollapsibleState.Expanded
-    );
-    this.iconPath = this.getIcon(element);
-    this.tooltip = element.url;
-    this.command = {
-      command: "sidebar-moc.open-uri",
-      title: "Open",
-      arguments: [{ url: element.url, point: element.startPoint }],
-    };
-  }
-
-  private getIcon(element: OutlineContent) {
-    if (element.url?.startsWith("http")) {
-      return vscode.Uri.joinPath(
-        this.context.extensionUri,
-        "resource/icon/url.svg"
-      );
-    }
-    if (!element.url) {
-      return vscode.Uri.joinPath(
-        this.context.extensionUri,
-        "resource/icon/folder.svg"
-      );
-    }
-    return vscode.Uri.joinPath(
-      this.context.extensionUri,
-      "resource/icon/file.svg"
-    );
-  }
-}
-
-class DataProvider implements vscode.TreeDataProvider<OutlineContent> {
-  constructor(
-    private context: vscode.ExtensionContext,
-    private tocService: TocService
-  ) {}
-
-  private _onDidChangeTreeData: vscode.EventEmitter<undefined | void> =
-    new vscode.EventEmitter<undefined | void>();
-  readonly onDidChangeTreeData: vscode.Event<undefined | void> =
-    this._onDidChangeTreeData.event;
-
-  refresh(): void {
-    this._onDidChangeTreeData.fire();
-  }
-
-  getTreeItem(
-    element: OutlineContent
-  ): vscode.TreeItem | Thenable<vscode.TreeItem> {
-    return new TreeViewItem(element, this.context);
-  }
-
-  getChildren(
-    element?: OutlineContent
-  ): vscode.ProviderResult<OutlineContent[]> {
-    if (!element) {
-      return this.tocService.toc as any;
-    }
-    return element.children;
-  }
-}
+import { TOCTreeDataProvider } from "./contrib/toc-tree-data-provider";
+import { Utils } from "vscode-uri";
 
 function updateContext() {
   const config = vscode.workspace.getConfiguration();
@@ -89,7 +20,7 @@ function updateContext() {
 
 export async function activate(context: vscode.ExtensionContext) {
   const tocService = new TocService();
-  const treeDataProvider = new DataProvider(context, tocService);
+  const treeDataProvider = new TOCTreeDataProvider(context, tocService);
   tocService.onTocChange(() => {
     treeDataProvider.refresh();
   });
@@ -102,20 +33,25 @@ export async function activate(context: vscode.ExtensionContext) {
   });
   vscode.commands.registerCommand(
     "sidebar-moc.open-uri",
-    (file: { url: string; point: Point }) => {
-      // if (!mocPath) {
-      //   return;
-      // }
-      // const mocURI = vscode.Uri.file(mocPath);
-      // if (!file.url) {
-      //   openAndShow(mocURI, file.point);
-      //   return;
-      // }
-      // if (file.url.startsWith("http")) {
-      //   vscode.env.openExternal(vscode.Uri.parse(file.url));
-      // }
-      // const fileUrI = vscode.Uri.joinPath(Utils.dirname(mocURI), file.url);
-      // openAndShow(fileUrI);
+    (file: { uri: string; outlineData: OutlineDataWithUri["data"] }) => {
+      const mocUri = Uri.file(file.uri);
+      if (file.outlineData.type === "root") {
+        openAndShow(mocUri, { line: 0, column: 0 });
+        return;
+      }
+      if (!file.outlineData.url) {
+        openAndShow(mocUri, file.outlineData.startPoint);
+        return;
+      }
+      if (file.outlineData.url.startsWith("http")) {
+        vscode.env.openExternal(vscode.Uri.parse(file.outlineData.url));
+        return;
+      }
+      const fileUrI = vscode.Uri.joinPath(
+        Utils.dirname(mocUri),
+        file.outlineData.url
+      );
+      openAndShow(fileUrI);
     }
   );
 
