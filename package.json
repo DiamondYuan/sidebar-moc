@@ -8,6 +8,7 @@
   "publisher": "DiamondYuan",
   "scripts": {
     "compile": "esbuild src/extension.ts --bundle --outfile=lib/extension.js  --external:vscode --format=cjs",
+    "dev": "node scripts/dev.js",
     "test": "yarn jest src/test/*.spec.ts",
     "build-pack": "npm run compile && vsce package"
   },
@@ -50,6 +51,7 @@
     ]
   },
   "dependencies": {
+    "chokidar": "^3.5.2",
     "esbuild": "^0.12.26",
     "mdast-util-to-string": "^3.1.0",
     "remark-gfm": "^2.0.0",
