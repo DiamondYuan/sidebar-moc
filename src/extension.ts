@@ -91,6 +91,20 @@ function loadAndParse(url: string): Promise<OutlineContent> {
   });
 }
 
+function updateContext() {
+  const config = vscode.workspace.getConfiguration();
+  const mocPaths: string[] = config.get("sidebar-moc.mocPath") ?? [];
+  const fsPath = vscode.window.activeTextEditor?.document?.uri.fsPath;
+  if (!fsPath) {
+    return;
+  }
+  if (mocPaths.includes(fsPath)) {
+    vscode.commands.executeCommand("setContext", "inSideBarMoc", true);
+  } else {
+    vscode.commands.executeCommand("setContext", "inSideBarMoc", false);
+  }
+}
+
 export async function activate(context: vscode.ExtensionContext) {
   const config = vscode.workspace.getConfiguration();
   const mocPath: string | undefined = config.get("sidebar-moc.mocPath");
@@ -134,19 +148,28 @@ export async function activate(context: vscode.ExtensionContext) {
       openAndShow(fileUrI);
     }
   );
+
+  vscode.window.onDidChangeActiveTextEditor((e) => {
+    updateContext();
+  });
+
   vscode.commands.registerCommand("sidebar-moc.add-moc", (e: Uri) => {
-    const wewe: string[] = config.get("sidebar-moc.mocPath") ?? [];
-    if (!wewe.includes(e.fsPath)) {
-      wewe.push(e.fsPath);
+    const paths: string[] = config.get("sidebar-moc.mocPath") ?? [];
+    if (!paths.includes(e.fsPath)) {
+      paths.push(e.fsPath);
     }
-    config.update("sidebar-moc.mocPath", wewe);
+    config.update("sidebar-moc.mocPath", paths).then(() => {
+      updateContext();
+    });
   });
   vscode.commands.registerCommand("sidebar-moc.remove-moc", (e: Uri) => {
-    let wewe: string[] = config.get("sidebar-moc.mocPath") ?? [];
-    if (wewe.includes(e.fsPath)) {
-      wewe = wewe.filter((o) => o !== e.fsPath);
+    let paths: string[] = config.get("sidebar-moc.mocPath") ?? [];
+    if (paths.includes(e.fsPath)) {
+      paths = paths.filter((o) => o !== e.fsPath);
     }
-    config.update("sidebar-moc.mocPath", wewe);
+    config.update("sidebar-moc.mocPath", paths).then(() => {
+      updateContext();
+    });
   });
 }
 

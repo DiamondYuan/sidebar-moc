@@ -23,11 +23,19 @@
     "commands": [
       {
         "command": "sidebar-moc.add-moc",
-        "title": "Add MOC"
+        "title": "Add MOC To Sidebar",
+        "icon": {
+          "dark": "./resource/icon/add-moc.svg",
+          "light": "./resource/icon/remove-moc.svg"
+        }
       },
       {
         "command": "sidebar-moc.remove-moc",
-        "title": "Remove MOC"
+        "title": "Remove MOC From Sidebar",
+        "icon": {
+          "dark": "./resource/icon/remove-moc.svg",
+          "light": "./resource/icon/remove-moc.svg"
+        }
       },
       {
         "command": "sidebar-moc.open-uri",
@@ -37,14 +45,14 @@
     "menus": {
       "editor/title": [
         {
-          "when": "resourceLangId == markdown",
+          "when": "resourceLangId == markdown && inSideBarMoc == false",
           "command": "sidebar-moc.add-moc",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
-          "when": "resourceLangId == markdown",
+          "when": "resourceLangId == markdown && inSideBarMoc == true",
           "command": "sidebar-moc.remove-moc",
-          "group": "navigation"
+          "group": "navigation@1"
         }
       ]
     },
