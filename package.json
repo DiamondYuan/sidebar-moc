@@ -5,13 +5,19 @@
   "repository": "git@github.com:DiamondYuan/sidebar-moc.git",
   "author": "DiamondYuan <admin@diamondyuan.com>",
   "license": "MIT",
+  "displayName": "SideBar Moc",
+  "publisher": "DiamondYuan",
   "scripts": {
-    "compile": "tsc",
+    "compile": "esbuild src/extension.ts --bundle --outfile=lib/extension.js  --external:vscode ",
     "test": "yarn jest src/test/*.spec.ts"
   },
+  "browser": "./lib/extension.js",
   "activationEvents": [
     "*"
   ],
+  "engines": {
+    "vscode": "^1.52.0"
+  },
   "contributes": {
     "commands": [
       {
@@ -23,7 +29,8 @@
       "explorer": [
         {
           "id": "sidebar-moc.view",
-          "visibility": "hidden"
+          "visibility": "hidden",
+          "name": "MOC"
         }
       ]
     },
@@ -39,12 +46,14 @@
     ]
   },
   "dependencies": {
+    "esbuild": "^0.12.26",
     "mdast-util-to-string": "^3.1.0",
     "remark-gfm": "^2.0.0",
     "remark-parse": "^10.0.0",
     "ts-jest": "^27.0.5",
     "unified": "^10.1.0",
-    "unist-util-select": "^4.0.0"
+    "unist-util-select": "^4.0.0",
+    "webpack": "^5.52.1"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",

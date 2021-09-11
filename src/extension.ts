@@ -1,4 +1,9 @@
 import vscode from "vscode";
+import { transformMdastToMocAst } from "./transform";
+import { sortRoot } from "./sort";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
 
 class TreeViewItem extends vscode.TreeItem {
   constructor(data: { title: string; link: string }) {
@@ -23,5 +28,15 @@ export function activate(context: vscode.ExtensionContext) {
     treeDataProvider: new DataProvider(),
   });
   const channel = vscode.window.createOutputChannel("Sidebar MOC");
-  channel.appendLine("Hello World");
+  const ew = vscode.workspace.getConfiguration();
+  channel.appendLine(ew.get("sidebar-moc.mocPath")!);
+  vscode.workspace
+    .openTextDocument(vscode.Uri.file(ew.get("sidebar-moc.mocPath")!))
+    .then((doc) => {
+      const mdast = unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .parse(doc.getText());
+      console.log(sortRoot(transformMdastToMocAst(mdast) as any));
+    });
 }
