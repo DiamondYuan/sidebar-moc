@@ -1,5 +1,5 @@
 import { OutlineContent, OutlineRoot, Point } from "./types";
-import vscode from "vscode";
+import vscode, { Uri } from "vscode";
 import { transformMdastToMocAst } from "./transform";
 import { sortRoot } from "./sort";
 import { unified } from "unified";
@@ -103,8 +103,8 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   if (mocPath) {
-    const root = await loadAndParse(mocPath);
-    treeDataProvider.refresh(root);
+    // const root = await loadAndParse(mocPath);
+    // treeDataProvider.refresh(root);
   }
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.md");
   watcher.onDidChange(async (e) => {
@@ -134,6 +134,20 @@ export async function activate(context: vscode.ExtensionContext) {
       openAndShow(fileUrI);
     }
   );
+  vscode.commands.registerCommand("sidebar-moc.add-moc", (e: Uri) => {
+    const wewe: string[] = config.get("sidebar-moc.mocPath") ?? [];
+    if (!wewe.includes(e.fsPath)) {
+      wewe.push(e.fsPath);
+    }
+    config.update("sidebar-moc.mocPath", wewe);
+  });
+  vscode.commands.registerCommand("sidebar-moc.remove-moc", (e: Uri) => {
+    let wewe: string[] = config.get("sidebar-moc.mocPath") ?? [];
+    if (wewe.includes(e.fsPath)) {
+      wewe = wewe.filter((o) => o !== e.fsPath);
+    }
+    config.update("sidebar-moc.mocPath", wewe);
+  });
 }
 
 function openAndShow(file: vscode.Uri, point?: Point) {

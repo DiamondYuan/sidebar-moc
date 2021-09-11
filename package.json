@@ -26,10 +26,28 @@
         "title": "Add MOC"
       },
       {
+        "command": "sidebar-moc.remove-moc",
+        "title": "Remove MOC"
+      },
+      {
         "command": "sidebar-moc.open-uri",
         "title": "OpenURi"
       }
     ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceLangId == markdown",
+          "command": "sidebar-moc.add-moc",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceLangId == markdown",
+          "command": "sidebar-moc.remove-moc",
+          "group": "navigation"
+        }
+      ]
+    },
     "views": {
       "explorer": [
         {
@@ -44,7 +62,7 @@
         "title": "Sidebar MOC",
         "properties": {
           "sidebar-moc.mocPath": {
-            "type": "string"
+            "type": "array"
           }
         }
       }
