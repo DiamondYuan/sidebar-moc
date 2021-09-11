@@ -5,10 +5,10 @@ import remarkGfm from "remark-gfm";
 import path from "path";
 import { FixtureManager } from "fixture-manager";
 import { outlineToString } from "./helper";
+import { sortRoot } from "../src/sort";
 
 const fixtures = new FixtureManager({ path: path.join(__dirname, "fixture") });
 
-unified().use(remarkParse).use(remarkGfm).parse("");
 it("", async () => {
   const gitbook = await fixtures.get("gitbook");
   const mdast = unified()
@@ -21,6 +21,6 @@ it("", async () => {
   );
   gitbook.writeFile(
     "summary.md.outline",
-    outlineToString(transformMdastToMocAst(mdast) as any)
+    outlineToString(sortRoot(transformMdastToMocAst(mdast) as any))
   );
 });
