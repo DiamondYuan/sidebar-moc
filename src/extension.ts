@@ -1,11 +1,7 @@
-import { OutlineContent, OutlineRoot, Point } from "./types";
+import { TocService } from "./services/toc-service";
+import { OutlineContent, Point } from "./types";
 import vscode, { Uri } from "vscode";
-import { transformMdastToMocAst } from "./transform";
-import { sortRoot } from "./sort";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import { Utils } from "vscode-uri";
+
 class TreeViewItem extends vscode.TreeItem {
   constructor(
     element: OutlineContent,
@@ -49,7 +45,7 @@ class TreeViewItem extends vscode.TreeItem {
 class DataProvider implements vscode.TreeDataProvider<OutlineContent> {
   constructor(
     private context: vscode.ExtensionContext,
-    private root: OutlineContent | OutlineRoot
+    private tocService: TocService
   ) {}
 
   private _onDidChangeTreeData: vscode.EventEmitter<undefined | void> =
@@ -57,8 +53,7 @@ class DataProvider implements vscode.TreeDataProvider<OutlineContent> {
   readonly onDidChangeTreeData: vscode.Event<undefined | void> =
     this._onDidChangeTreeData.event;
 
-  refresh(root: OutlineContent): void {
-    this.root = root;
+  refresh(): void {
     this._onDidChangeTreeData.fire();
   }
 
@@ -72,23 +67,10 @@ class DataProvider implements vscode.TreeDataProvider<OutlineContent> {
     element?: OutlineContent
   ): vscode.ProviderResult<OutlineContent[]> {
     if (!element) {
-      return this.root.children;
+      return this.tocService.toc as any;
     }
     return element.children;
   }
-}
-
-function loadAndParse(url: string): Promise<OutlineContent> {
-  return new Promise<OutlineContent>((r) => {
-    vscode.workspace.openTextDocument(vscode.Uri.file(url)).then((doc) => {
-      const mdast = unified()
-        .use(remarkParse)
-        .use(remarkGfm)
-        .parse(doc.getText());
-      const root = sortRoot(transformMdastToMocAst(mdast) as any) as any;
-      r(root);
-    });
-  });
 }
 
 function updateContext() {
@@ -106,46 +88,34 @@ function updateContext() {
 }
 
 export async function activate(context: vscode.ExtensionContext) {
-  const config = vscode.workspace.getConfiguration();
-  const mocPath: string | undefined = config.get("sidebar-moc.mocPath");
-  const treeDataProvider = new DataProvider(context, {
-    type: "root",
-    children: [],
+  const tocService = new TocService();
+  const treeDataProvider = new DataProvider(context, tocService);
+  tocService.onTocChange(() => {
+    treeDataProvider.refresh();
   });
   vscode.window.createTreeView("sidebar-moc.view", {
     treeDataProvider: treeDataProvider,
   });
-
-  if (mocPath) {
-    // const root = await loadAndParse(mocPath);
-    // treeDataProvider.refresh(root);
-  }
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.md");
-  watcher.onDidChange(async (e) => {
-    if (!mocPath) {
-      return;
-    }
-    if (e.path === mocPath) {
-      const root = await loadAndParse(mocPath);
-      treeDataProvider.refresh(root);
-    }
+  watcher.onDidChange((e) => {
+    tocService.updateToc(e);
   });
   vscode.commands.registerCommand(
     "sidebar-moc.open-uri",
     (file: { url: string; point: Point }) => {
-      if (!mocPath) {
-        return;
-      }
-      const mocURI = vscode.Uri.file(mocPath);
-      if (!file.url) {
-        openAndShow(mocURI, file.point);
-        return;
-      }
-      if (file.url.startsWith("http")) {
-        vscode.env.openExternal(vscode.Uri.parse(file.url));
-      }
-      const fileUrI = vscode.Uri.joinPath(Utils.dirname(mocURI), file.url);
-      openAndShow(fileUrI);
+      // if (!mocPath) {
+      //   return;
+      // }
+      // const mocURI = vscode.Uri.file(mocPath);
+      // if (!file.url) {
+      //   openAndShow(mocURI, file.point);
+      //   return;
+      // }
+      // if (file.url.startsWith("http")) {
+      //   vscode.env.openExternal(vscode.Uri.parse(file.url));
+      // }
+      // const fileUrI = vscode.Uri.joinPath(Utils.dirname(mocURI), file.url);
+      // openAndShow(fileUrI);
     }
   );
 
@@ -153,7 +123,14 @@ export async function activate(context: vscode.ExtensionContext) {
     updateContext();
   });
 
+  vscode.workspace.onDidChangeConfiguration(() => {
+    const config = vscode.workspace.getConfiguration();
+    let paths: string[] = config.get("sidebar-moc.mocPath") ?? [];
+    tocService.updateConfig(paths);
+  });
+
   vscode.commands.registerCommand("sidebar-moc.add-moc", (e: Uri) => {
+    const config = vscode.workspace.getConfiguration();
     const paths: string[] = config.get("sidebar-moc.mocPath") ?? [];
     if (!paths.includes(e.fsPath)) {
       paths.push(e.fsPath);
@@ -163,6 +140,7 @@ export async function activate(context: vscode.ExtensionContext) {
     });
   });
   vscode.commands.registerCommand("sidebar-moc.remove-moc", (e: Uri) => {
+    const config = vscode.workspace.getConfiguration();
     let paths: string[] = config.get("sidebar-moc.mocPath") ?? [];
     if (paths.includes(e.fsPath)) {
       paths = paths.filter((o) => o !== e.fsPath);
