@@ -7,23 +7,42 @@ import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import { Utils } from "vscode-uri";
 class TreeViewItem extends vscode.TreeItem {
-  constructor(element: OutlineContent, context: vscode.ExtensionContext) {
+  constructor(
+    element: OutlineContent,
+    private context: vscode.ExtensionContext
+  ) {
     super(
       element.text ?? "NONE",
       element.children.length === 0
         ? vscode.TreeItemCollapsibleState.None
         : vscode.TreeItemCollapsibleState.Expanded
     );
-
-    this.iconPath = vscode.Uri.joinPath(
-      context.extensionUri,
-      "resource/icon/url.svg"
-    );
+    this.iconPath = this.getIcon(element);
+    this.tooltip = element.url;
     this.command = {
       command: "sidebar-moc.open-uri",
       title: "Open",
       arguments: [{ url: element.url, point: element.startPoint }],
     };
+  }
+
+  private getIcon(element: OutlineContent) {
+    if (element.url?.startsWith("http")) {
+      return vscode.Uri.joinPath(
+        this.context.extensionUri,
+        "resource/icon/url.svg"
+      );
+    }
+    if (!element.url) {
+      return vscode.Uri.joinPath(
+        this.context.extensionUri,
+        "resource/icon/folder.svg"
+      );
+    }
+    return vscode.Uri.joinPath(
+      this.context.extensionUri,
+      "resource/icon/file.svg"
+    );
   }
 }
 
@@ -73,7 +92,6 @@ function loadAndParse(url: string): Promise<OutlineContent> {
 }
 
 export async function activate(context: vscode.ExtensionContext) {
-  const channel = vscode.window.createOutputChannel("Sidebar MOC");
   const config = vscode.workspace.getConfiguration();
   const mocPath: string | undefined = config.get("sidebar-moc.mocPath");
   const treeDataProvider = new DataProvider(context, {
@@ -88,7 +106,16 @@ export async function activate(context: vscode.ExtensionContext) {
     const root = await loadAndParse(mocPath);
     treeDataProvider.refresh(root);
   }
-
+  const watcher = vscode.workspace.createFileSystemWatcher("**/*.md");
+  watcher.onDidChange(async (e) => {
+    if (!mocPath) {
+      return;
+    }
+    if (e.path === mocPath) {
+      const root = await loadAndParse(mocPath);
+      treeDataProvider.refresh(root);
+    }
+  });
   vscode.commands.registerCommand(
     "sidebar-moc.open-uri",
     (file: { url: string; point: Point }) => {
@@ -99,6 +126,9 @@ export async function activate(context: vscode.ExtensionContext) {
       if (!file.url) {
         openAndShow(mocURI, file.point);
         return;
+      }
+      if (file.url.startsWith("http")) {
+        vscode.env.openExternal(vscode.Uri.parse(file.url));
       }
       const fileUrI = vscode.Uri.joinPath(Utils.dirname(mocURI), file.url);
       openAndShow(fileUrI);
@@ -118,6 +148,8 @@ function openAndShow(file: vscode.Uri, point?: Point) {
               )
             : undefined,
         });
+      } else {
+        vscode.window.showTextDocument(a);
       }
     },
     (error: any) => {
