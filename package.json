@@ -9,7 +9,8 @@
   "publisher": "DiamondYuan",
   "scripts": {
     "compile": "esbuild src/extension.ts --bundle --outfile=lib/extension.js  --external:vscode --format=cjs",
-    "test": "yarn jest src/test/*.spec.ts"
+    "test": "yarn jest src/test/*.spec.ts",
+    "build-pack": "npm run compile && vsce package"
   },
   "browser": "./lib/extension.js",
   "activationEvents": [
@@ -57,6 +58,7 @@
     "ts-jest": "^27.0.5",
     "unified": "^10.1.0",
     "unist-util-select": "^4.0.0",
+    "vsce": "^1.99.0",
     "vscode-uri": "^3.0.2",
     "webpack": "^5.52.1"
   },
@@ -65,12 +67,12 @@
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-typescript": "^7.15.0",
     "@types/jest": "^27.0.1",
+    "@types/vscode": "^1.52.0",
     "babel-jest": "^27.1.1",
     "fixture-manager": "^0.0.3",
     "jest": "^27.1.1",
     "rollup": "^2.56.3",
     "tslib": "^2.3.1",
-    "typescript": "^4.4.2",
-    "@types/vscode": "^1.52.0"
+    "typescript": "^4.4.2"
   }
 }
