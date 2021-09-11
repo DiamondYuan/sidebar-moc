@@ -19,7 +19,7 @@ function getIcon(
   const data = element.data;
   const extensionUri = context.extensionUri;
   if (data.type === "root") {
-    return vscode.Uri.joinPath(extensionUri, "resource/icon/folder.svg");
+    return vscode.Uri.joinPath(extensionUri, "resource/icon/outline.svg");
   }
   if (!data.url) {
     return vscode.Uri.joinPath(extensionUri, "resource/icon/folder.svg");
