@@ -1,4 +1,4 @@
-import { OutlineContent, OutlineRoot } from "./types";
+import { OutlineContent, OutlineRoot, Point } from "./types";
 import vscode from "vscode";
 import { transformMdastToMocAst } from "./transform";
 import { sortRoot } from "./sort";
@@ -22,7 +22,7 @@ class TreeViewItem extends vscode.TreeItem {
     this.command = {
       command: "sidebar-moc.open-uri",
       title: "Open",
-      arguments: [element.url],
+      arguments: [{ url: element.url, point: element.startPoint }],
     };
   }
 }
@@ -89,23 +89,36 @@ export async function activate(context: vscode.ExtensionContext) {
     treeDataProvider.refresh(root);
   }
 
-  vscode.commands.registerCommand("sidebar-moc.open-uri", (file?: string) => {
-    if (!mocPath) {
-      return;
+  vscode.commands.registerCommand(
+    "sidebar-moc.open-uri",
+    (file: { url: string; point: Point }) => {
+      if (!mocPath) {
+        return;
+      }
+      const mocURI = vscode.Uri.file(mocPath);
+      if (!file.url) {
+        openAndShow(mocURI, file.point);
+        return;
+      }
+      const fileUrI = vscode.Uri.joinPath(Utils.dirname(mocURI), file.url);
+      openAndShow(fileUrI);
     }
-    const mocURI = vscode.Uri.file(mocPath);
-    if (!file) {
-      return;
-    }
-    const fileUrI = vscode.Uri.joinPath(Utils.dirname(mocURI), file);
-    openAndShow(fileUrI);
-  });
+  );
 }
 
-function openAndShow(file: vscode.Uri) {
+function openAndShow(file: vscode.Uri, point?: Point) {
   vscode.workspace.openTextDocument(file).then(
     (a: vscode.TextDocument) => {
-      vscode.window.showTextDocument(a, 1, false);
+      if (point) {
+        vscode.window.showTextDocument(a, {
+          selection: point
+            ? new vscode.Range(
+                new vscode.Position(point.line - 1, point.column - 1),
+                new vscode.Position(point.line - 1, point.column - 1)
+              )
+            : undefined,
+        });
+      }
     },
     (error: any) => {
       //
