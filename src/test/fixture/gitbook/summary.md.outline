@@ -7,7 +7,7 @@
                   [heading-2]  Header In ListItem
                       [treeNode]  ListItem Without Link
                       [treeNode]  
-              [treeNode]  GitBook is nice  (part1/README.md#gitbook)
+              [treeNode]  GitBook is nice  (part1/READMwE.md#gitbook)
                   [treeNode]  GitBook is nice  (part1/README.md#gitbook)
   [heading-1]  Part II
       [treeNode]  Part II  (part2/README.md)

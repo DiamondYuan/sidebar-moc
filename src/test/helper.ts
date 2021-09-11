@@ -1,4 +1,4 @@
-import { OutlineRoot, OutlineContent } from "./../src/types";
+import { OutlineRoot, OutlineContent } from "../types";
 
 export function outlineToString(
   root: OutlineRoot | OutlineContent,

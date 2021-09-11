@@ -1,11 +1,11 @@
-import { transformMdastToMocAst } from "../src/transform";
+import { transformMdastToMocAst } from "../transform";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import path from "path";
 import { FixtureManager } from "fixture-manager";
 import { outlineToString } from "./helper";
-import { sortRoot } from "../src/sort";
+import { sortRoot } from "../sort";
 
 const fixtures = new FixtureManager({ path: path.join(__dirname, "fixture") });
 
