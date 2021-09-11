@@ -1,7 +1,6 @@
 {
   "name": "sidebar-moc",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "git@github.com:DiamondYuan/sidebar-moc.git",
   "author": "DiamondYuan <admin@diamondyuan.com>",
   "license": "MIT",
