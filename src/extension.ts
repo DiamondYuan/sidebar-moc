@@ -36,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
     (file: { uri: string; outlineData: OutlineDataWithUri["data"] }) => {
       const mocUri = Uri.file(file.uri);
       if (file.outlineData.type === "root") {
-        openAndShow(mocUri, { line: 0, column: 0 });
+        openAndShow(mocUri, { line: 1, column: 1 });
         return;
       }
       if (!file.outlineData.url) {
