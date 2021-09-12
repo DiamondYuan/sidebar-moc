@@ -60,7 +60,7 @@
       "explorer": [
         {
           "id": "sidebar-moc.view",
-          "visibility": "hidden",
+          "visibility": "visible",
           "name": "MOC"
         }
       ]
