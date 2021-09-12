@@ -41,7 +41,6 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCompletionItemProvider(
       selector,
       new TOCCompletionItemProvider(tocService),
-      ".",
       "/"
     )
   );

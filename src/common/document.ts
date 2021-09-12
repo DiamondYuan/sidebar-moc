@@ -1,21 +1,10 @@
 import vscode from "vscode";
 
-export enum QuoteType {
-  double = "double",
-  single = "single",
-  backtick = "backtick",
-}
 export enum Brackets {
   ROUND = "()",
   BOX = "[]",
   CURLY = "{}",
 }
-
-export const QuoteCharMap = {
-  [QuoteType.single]: "'",
-  [QuoteType.double]: '"',
-  [QuoteType.backtick]: "`",
-};
 
 export function isUndefined<T>(data: T | undefined): data is T {
   // eslint-disable-next-line no-undefined
@@ -34,9 +23,6 @@ export class TextDocumentUtils {
   }
 
   public CharAt = (offset: number): string => {
-    if (this.outOfRange(offset)) {
-      throw new Error("illegal offset");
-    }
     return this.document.getText(
       new vscode.Range(
         this.document.positionAt(offset),
@@ -65,15 +51,9 @@ export class TextDocumentUtils {
     let growStart;
     let growEnd;
     const startOfDocument = this.document.offsetAt(new vscode.Position(0, 0));
-    if (startOfDocument === start) {
-      return null;
-    }
     const endOfDocument = this.document.offsetAt(
       new vscode.Position(Infinity, Infinity)
     );
-    if (endOfDocument === end) {
-      return null;
-    }
     let bracketsStack: string[] = [];
     const leftBrackets = brackets[0];
     const rightBrackets = brackets[1];
@@ -93,7 +73,7 @@ export class TextDocumentUtils {
       return null;
     }
     bracketsStack = [];
-    for (let i = end + 1; i <= endOfDocument; i++) {
+    for (let i = end; i <= endOfDocument; i++) {
       if (this.CharAt(i) === leftBrackets) {
         bracketsStack.push(brackets);
       } else if (this.CharAt(i) === rightBrackets) {
@@ -113,42 +93,4 @@ export class TextDocumentUtils {
       this.document.positionAt(growEnd + 1)
     );
   }
-
-  public getQuoteRange = (position: vscode.Position, quoteType: QuoteType) => {
-    const offset = this.document.offsetAt(position);
-    if (this.outOfRange(offset)) {
-      return null;
-    }
-    const startOfLint = this.document.offsetAt(
-      new vscode.Position(position.line, 0)
-    );
-    const endOfLint = this.document.offsetAt(
-      new vscode.Position(position.line, Infinity)
-    );
-    const quoteChar = QuoteCharMap[quoteType];
-    let frontQuoteOffset;
-    for (let i = offset - 1; i >= startOfLint; i--) {
-      if (this.CharAt(i) === quoteChar) {
-        frontQuoteOffset = i;
-        break;
-      }
-    }
-    if (isUndefined(frontQuoteOffset)) {
-      return null;
-    }
-    let endQuoteOffset;
-    for (let i = offset; i <= endOfLint; i++) {
-      if (this.CharAt(i) === quoteChar) {
-        endQuoteOffset = i;
-        break;
-      }
-    }
-    if (isUndefined(endQuoteOffset)) {
-      return null;
-    }
-    return new vscode.Range(
-      this.document.positionAt(frontQuoteOffset),
-      this.document.positionAt(endQuoteOffset + 1)
-    );
-  };
 }
