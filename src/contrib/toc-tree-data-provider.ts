@@ -18,15 +18,15 @@ function getIcon(
   const data = element.data;
   const extensionUri = context.extensionUri;
   if (data.type === "root") {
-    return vscode.Uri.joinPath(extensionUri, "resource/icon/outline.svg");
+    return new vscode.ThemeIcon("output-view-icon");
   }
   if (!data.url) {
-    return vscode.Uri.joinPath(extensionUri, "resource/icon/folder.svg");
+    return new vscode.ThemeIcon("edit");
   }
   if (data.url.startsWith("http")) {
-    return vscode.Uri.joinPath(extensionUri, "resource/icon/url.svg");
+    return new vscode.ThemeIcon("link");
   }
-  return vscode.Uri.joinPath(extensionUri, "resource/icon/file.svg");
+  return new vscode.ThemeIcon("go-to-file");
 }
 
 class TreeViewItem extends vscode.TreeItem {
