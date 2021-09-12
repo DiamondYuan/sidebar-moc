@@ -1,3 +1,4 @@
+import { TOCCompletionItemProvider } from "./contrib/language/path-completion-item-provider";
 import { TocService } from "./services/toc-service";
 import { Point, OutlineDataWithUri } from "./types";
 import vscode, { Uri } from "vscode";
@@ -31,6 +32,19 @@ export async function activate(context: vscode.ExtensionContext) {
   watcher.onDidChange((e) => {
     tocService.updateToc(e);
   });
+  var selector: vscode.DocumentSelector = [
+    {
+      pattern: "**",
+    },
+  ];
+  context.subscriptions.push(
+    vscode.languages.registerCompletionItemProvider(
+      selector,
+      new TOCCompletionItemProvider(tocService),
+      ".",
+      "/"
+    )
+  );
   vscode.commands.registerCommand(
     "sidebar-moc.open-uri",
     (file: { uri: string; outlineData: OutlineDataWithUri["data"] }) => {
