@@ -11,12 +11,8 @@ function getLabel(element: OutlineDataWithUri) {
   return data.text ?? "Undefined";
 }
 
-function getIcon(
-  element: OutlineDataWithUri,
-  context: vscode.ExtensionContext
-) {
+function getIcon(element: OutlineDataWithUri) {
   const data = element.data;
-  const extensionUri = context.extensionUri;
   if (data.type === "root") {
     return new vscode.ThemeIcon("output-view-icon");
   }
@@ -30,17 +26,14 @@ function getIcon(
 }
 
 class TreeViewItem extends vscode.TreeItem {
-  constructor(
-    element: OutlineDataWithUri,
-    private context: vscode.ExtensionContext
-  ) {
+  constructor(element: OutlineDataWithUri) {
     super(
       getLabel(element),
       element.data.children.length === 0
         ? vscode.TreeItemCollapsibleState.None
         : vscode.TreeItemCollapsibleState.Expanded
     );
-    this.iconPath = getIcon(element, this.context);
+    this.iconPath = getIcon(element);
     this.tooltip = element.uri.fsPath;
     this.command = {
       command: "sidebar-moc.open-uri",
@@ -53,10 +46,7 @@ class TreeViewItem extends vscode.TreeItem {
 export class TOCTreeDataProvider
   implements vscode.TreeDataProvider<OutlineDataWithUri>
 {
-  constructor(
-    private context: vscode.ExtensionContext,
-    private tocService: TocService
-  ) {}
+  constructor(private tocService: TocService) {}
 
   private _onDidChangeTreeData: vscode.EventEmitter<undefined | void> =
     new vscode.EventEmitter<undefined | void>();
@@ -70,7 +60,7 @@ export class TOCTreeDataProvider
   getTreeItem(
     element: OutlineDataWithUri
   ): vscode.TreeItem | Thenable<vscode.TreeItem> {
-    return new TreeViewItem(element, this.context);
+    return new TreeViewItem(element);
   }
 
   getChildren(

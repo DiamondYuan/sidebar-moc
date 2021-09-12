@@ -21,7 +21,7 @@ function updateContext() {
 
 export async function activate(context: vscode.ExtensionContext) {
   const tocService = new TocService();
-  const treeDataProvider = new TOCTreeDataProvider(context, tocService);
+  const treeDataProvider = new TOCTreeDataProvider(tocService);
   tocService.onTocChange(() => {
     treeDataProvider.refresh();
   });
