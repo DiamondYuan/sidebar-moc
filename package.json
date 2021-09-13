@@ -7,7 +7,8 @@
   "displayName": "SideBar Moc",
   "publisher": "DiamondYuan",
   "scripts": {
-    "compile": "esbuild src/extension.ts --bundle --outfile=lib/extension.js  --external:vscode --format=cjs",
+    "compile": "yarn compile:electron && yarn compile:browser",
+    "compile:electron": "esbuild src/extension.ts --bundle --outfile=lib/extension.js  --external:vscode --format=cjs",
     "compile:browser": "esbuild src/extension.browser.ts --bundle --outfile=lib/extension.browser.js  --external:vscode --format=cjs",
     "dev": "node scripts/dev.js",
     "test": "yarn jest src/test/*.spec.ts",
