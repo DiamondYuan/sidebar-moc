@@ -21,12 +21,14 @@ export class TocService {
   async updateConfig(files: string[]) {
     const toc: OutlineDataWithUri[] = [];
     for (const iterator of files) {
-      const uri = vscode.Uri.file(iterator);
-      const root = (await loadAndParse(uri)) as any as OutlineRoot;
-      toc.push({
-        uri,
-        data: root,
-      });
+      try {
+        const uri = vscode.Uri.file(iterator);
+        const root = (await loadAndParse(uri)) as any as OutlineRoot;
+        toc.push({
+          uri,
+          data: root,
+        });
+      } catch (error) {}
     }
     this.toc = toc;
     this.handler();
@@ -35,25 +37,23 @@ export class TocService {
   async updateToc(file: vscode.Uri) {
     const index = this.toc.findIndex((p) => p.uri.fsPath === file.fsPath);
     if (index !== -1) {
-      const root = await loadAndParse(file);
-      this.toc[index] = {
-        uri: file,
-        data: root,
-      };
+      try {
+        const root = await loadAndParse(file);
+        this.toc[index] = {
+          uri: file,
+          data: root,
+        };
+      } catch (error) {}
       this.handler();
     }
   }
 }
 
-function loadAndParse(uri: vscode.Uri): Promise<OutlineContent> {
-  return new Promise<OutlineContent>((r) => {
-    vscode.workspace.openTextDocument(uri).then((doc) => {
-      const mdast = unified()
-        .use(remarkParse)
-        .use(remarkGfm)
-        .parse(doc.getText());
-      const root = sortRoot(transformMdastToMocAst(mdast) as any) as any;
-      r(root);
-    });
-  });
+async function loadAndParse(uri: vscode.Uri): Promise<OutlineContent> {
+  const document = await vscode.workspace.openTextDocument(uri);
+  const mdast = unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .parse(document.getText());
+  return sortRoot(transformMdastToMocAst(mdast) as any) as any;
 }
