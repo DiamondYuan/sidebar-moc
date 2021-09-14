@@ -26,6 +26,7 @@ export interface OutlineTreeNode {
 
 export interface OutlineRoot {
   type: "root";
+  config: { title?: string };
   children: Array<OutlineContent>;
 }
 

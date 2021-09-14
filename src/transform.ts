@@ -9,13 +9,24 @@ import {
 } from "mdast";
 import { select } from "unist-util-select";
 import { toString as mdastToString } from "mdast-util-to-string";
+import { load } from "js-yaml";
 
 export function transformMdastToMocAst(
   root: MdastContent | MdastRoot
 ): OutlineRoot | null | OutlineContent | OutlineContent[] {
   if (root.type === "root") {
+    let config: { title?: string } = {};
+    for (const iterator of root.children) {
+      if (iterator.type === "yaml") {
+        try {
+          config = load(iterator.value) as { title?: string };
+        } catch (error) {}
+        break;
+      }
+    }
     return {
       type: "root",
+      config,
       children: transformChildren(root),
     };
   } else if (root.type === "list") {

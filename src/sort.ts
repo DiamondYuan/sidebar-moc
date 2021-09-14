@@ -1,7 +1,11 @@
 import { OutlineRoot, OutlineContent, OutlineHeadingNode } from "./types";
 
 export function sortRoot(root: OutlineRoot): OutlineRoot {
-  return { type: "root", children: sortChildren(root.children) };
+  return {
+    type: "root",
+    children: sortChildren(root.children),
+    config: root.config,
+  };
 }
 
 function sortChildren(nodes: OutlineContent[]): OutlineContent[] {
