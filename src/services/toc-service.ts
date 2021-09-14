@@ -3,6 +3,7 @@ import { OutlineContent, OutlineRoot, OutlineDataWithUri } from "../types";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
+import remarkFrontmatter from "remark-frontmatter";
 import { sortRoot } from "../sort";
 import { transformMdastToMocAst } from "../transform";
 
@@ -54,6 +55,7 @@ async function loadAndParse(uri: vscode.Uri): Promise<OutlineContent> {
   const mdast = unified()
     .use(remarkParse)
     .use(remarkGfm)
+    .use(remarkFrontmatter, "yaml")
     .parse(document.getText());
   return sortRoot(transformMdastToMocAst(mdast) as any) as any;
 }
