@@ -1,4 +1,4 @@
-import { transformMdastToMocAst } from "../transform";
+import { mdastToOutlineAstRoot } from "../transform";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -18,10 +18,10 @@ it("", async () => {
     .parse((await gitbook.readFile("summary.md"))!);
   gitbook.writeFile(
     "summary.md.outline.json",
-    JSON.stringify(transformMdastToMocAst(mdast), null, 2)
+    JSON.stringify(mdastToOutlineAstRoot(mdast), null, 2)
   );
-  expect(await outlineToString(sortRoot((transformMdastToMocAst(mdast) as any)))).
-toMatchInlineSnapshot(`
+  expect(await outlineToString(sortRoot(mdastToOutlineAstRoot(mdast) as any)))
+    .toMatchInlineSnapshot(`
 "[root]
   [heading-1]  Summary
       [heading-3]  Part I  (part1/README.md)
@@ -47,9 +47,9 @@ it("", async () => {
     .parse((await gitbook.readFile("summary.md"))!);
   gitbook.writeFile(
     "summary.md.outline.json",
-    JSON.stringify(transformMdastToMocAst(mdast), null, 2)
+    JSON.stringify(mdastToOutlineAstRoot(mdast), null, 2)
   );
-  expect(await outlineToString(sortRoot(transformMdastToMocAst(mdast) as any)))
+  expect(await outlineToString(sortRoot(mdastToOutlineAstRoot(mdast) as any)))
     .toMatchInlineSnapshot(`
 "[root]
   [treeNode]  1.0  (1.0)

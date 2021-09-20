@@ -31,7 +31,7 @@ export function mdastToOutlineAstRoot(origin: MdastRoot): OutlineRoot {
   };
 }
 
-export function transformMdastToMocAst(
+function transformMdastToMocAst(
   root: MdastContent | MdastRoot
 ): OutlineRoot | null | OutlineContent | OutlineContent[] {
   if (root.type === "root") {

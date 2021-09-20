@@ -5,7 +5,7 @@ import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkFrontmatter from "remark-frontmatter";
 import { sortRoot } from "../sort";
-import { mdastToOutlineAstRoot, transformMdastToMocAst } from "../transform";
+import { mdastToOutlineAstRoot } from "../transform";
 
 export class TocService {
   public toc: OutlineDataWithUri[];
