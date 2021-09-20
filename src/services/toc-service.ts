@@ -5,7 +5,7 @@ import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkFrontmatter from "remark-frontmatter";
 import { sortRoot } from "../sort";
-import { transformMdastToMocAst } from "../transform";
+import { mdastToOutlineAstRoot, transformMdastToMocAst } from "../transform";
 
 export class TocService {
   public toc: OutlineDataWithUri[];
@@ -57,5 +57,5 @@ async function loadAndParse(uri: vscode.Uri): Promise<OutlineContent> {
     .use(remarkGfm)
     .use(remarkFrontmatter, "yaml")
     .parse(document.getText());
-  return sortRoot(transformMdastToMocAst(mdast) as any) as any;
+  return sortRoot(mdastToOutlineAstRoot(mdast)) as any;
 }

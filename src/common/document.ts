@@ -6,11 +6,6 @@ export enum Brackets {
   CURLY = "{}",
 }
 
-export function isUndefined<T>(data: T | undefined): data is T {
-  // eslint-disable-next-line no-undefined
-  return data === undefined;
-}
-
 export class TextDocumentUtils {
   private document: vscode.TextDocument;
   private readonly illegal: vscode.Position;

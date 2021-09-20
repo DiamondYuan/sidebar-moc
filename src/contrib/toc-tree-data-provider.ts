@@ -6,7 +6,6 @@ import { Utils } from "vscode-uri";
 function getLabel(element: OutlineDataWithUri) {
   const data = element.data;
   if (data.type === "root") {
-    console.log(data, "root");
     if (data?.config?.title) {
       return data?.config?.title;
     }
