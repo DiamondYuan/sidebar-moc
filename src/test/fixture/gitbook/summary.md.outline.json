@@ -1,5 +1,6 @@
 {
   "type": "root",
+  "config": {},
   "children": [
     {
       "type": "heading",

@@ -1,5 +1,8 @@
 {
   "type": "root",
+  "config": {
+    "key": "value"
+  },
   "children": [
     {
       "type": "treeNode",
