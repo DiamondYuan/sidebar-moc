@@ -3,7 +3,8 @@ import { TocService } from "./services/toc-service";
 import { Point, OutlineDataWithUri } from "./types";
 import vscode, { Uri } from "vscode";
 import { TOCTreeDataProvider } from "./contrib/toc-tree-data-provider";
-import { Utils } from "vscode-uri";
+import { Utils, URI } from "vscode-uri";
+import { PathService } from "./services/path";
 
 function updateContext() {
   const config = vscode.workspace.getConfiguration();
@@ -19,8 +20,40 @@ function updateContext() {
   }
 }
 
+function getConfigurationFile(): {
+  target: vscode.ConfigurationTarget;
+  fsPath?: string;
+} {
+  if (vscode.workspace.workspaceFile) {
+    if (vscode.workspace.workspaceFile.scheme === "untitled") {
+      return {
+        target: vscode.ConfigurationTarget.Workspace,
+      };
+    }
+    return {
+      target: vscode.ConfigurationTarget.Workspace,
+      fsPath: vscode.workspace.workspaceFile.fsPath,
+    };
+  }
+  if (Array.isArray(vscode.workspace.workspaceFolders)) {
+    const workspaceFolders: vscode.WorkspaceFolder[] =
+      vscode.workspace.workspaceFolders;
+    if (workspaceFolders.length !== 1) {
+      throw new Error("un expect workspaceFolders");
+    }
+    return {
+      target: vscode.ConfigurationTarget.WorkspaceFolder,
+      fsPath: workspaceFolders[0].uri.fsPath,
+    };
+  }
+  return {
+    target: vscode.ConfigurationTarget.Global,
+  };
+}
+
 export async function activate(context: vscode.ExtensionContext) {
-  const tocService = new TocService();
+  const configurationFile = getConfigurationFile();
+  const tocService = new TocService(new PathService(configurationFile.fsPath));
   const treeDataProvider = new TOCTreeDataProvider(tocService);
   tocService.onTocChange(() => {
     treeDataProvider.refresh();

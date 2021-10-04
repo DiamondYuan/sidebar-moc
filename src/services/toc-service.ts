@@ -1,3 +1,4 @@
+import { IPathService } from "./path";
 import vscode from "vscode";
 import { OutlineContent, OutlineRoot, OutlineDataWithUri } from "../types";
 import { unified } from "unified";
@@ -11,7 +12,7 @@ export class TocService {
   public toc: OutlineDataWithUri[];
   private handler: () => void = () => {};
 
-  constructor() {
+  constructor(private pathService: IPathService) {
     this.toc = [];
   }
 

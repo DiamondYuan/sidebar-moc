@@ -1,23 +1,25 @@
-import { URI, Utils } from "vscode-uri";
-import { relative } from "path";
+import { relative, resolve } from "path";
 
 export interface IPathService {
-  uriToConfigPath(fs: URI): string;
-  configPathToUri(configPath: string): URI;
+  uriToConfigPath(fs: string): string;
+  configPathToUri(configPath: string): string;
 }
 
 export class PathService implements IPathService {
-  constructor(private base: URI) {}
+  constructor(private base?: string) {}
 
-  uriToConfigPath(uri: URI) {
+  uriToConfigPath(uri: string) {
+    if (!this.base) {
+      return uri;
+    }
     // TODO: remove path
-    return relative(this.base.fsPath, uri.fsPath);
+    return relative(this.base, uri);
   }
 
-  configPathToUri(configPath: string): URI {
+  configPathToUri(configPath: string): string {
     if (configPath.startsWith("/")) {
-      return URI.file(configPath);
+      return configPath;
     }
-    return Utils.joinPath(this.base, configPath);
+    return resolve(this.base ?? "/", configPath);
   }
 }

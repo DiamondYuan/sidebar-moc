@@ -8,13 +8,14 @@
   "publisher": "DiamondYuan",
   "scripts": {
     "compile": "yarn compile:electron && yarn compile:browser",
-    "compile:electron": "esbuild src/extension.ts --bundle --outfile=lib/extension.js  --external:vscode --format=cjs",
-    "compile:browser": "esbuild src/extension.browser.ts --bundle --outfile=lib/extension.browser.js  --external:vscode --format=cjs",
+    "compile:electron": "esbuild src/extension.ts --platform=node --bundle --outfile=lib/extension.js  --external:vscode --format=cjs",
+    "compile:browser": "esbuild src/extension.browser.ts --platform=node --bundle --outfile=lib/extension.browser.js  --external:vscode --format=cjs",
     "dev": "node scripts/dev.js",
     "test": "yarn jest src/test/*.spec.ts",
     "build-pack": "npm run compile && vsce package"
   },
-  "browser": "./lib/extension.browser.js",
+  "main": "./lib/extension.js",
+  "browser": "./lib/extension.browser",
   "activationEvents": [
     "*"
   ],
