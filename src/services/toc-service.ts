@@ -21,6 +21,7 @@ export class TocService {
       this.pathService.configPathToUri(p)
     )) {
       try {
+        console.log(iterator, "iterator");
         const uri = vscode.Uri.file(iterator);
         const root = (await loadAndParse(uri)) as any as OutlineRoot;
         toc.push({

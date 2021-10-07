@@ -47,6 +47,12 @@ export async function activate(context: vscode.ExtensionContext) {
     if (!fsPath) {
       return;
     }
+    console.log(
+      "mocPaths",
+      "inSideBarMoc",
+      mocPaths,
+      mocPaths.includes(pathService.uriToConfigPath(fsPath))
+    );
     if (mocPaths.includes(pathService.uriToConfigPath(fsPath))) {
       vscode.commands.executeCommand("setContext", "inSideBarMoc", true);
     } else {
@@ -114,10 +120,9 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand("sidebar-moc.add-moc", (e: Uri) => {
     const config = vscode.workspace.getConfiguration();
     let paths: string[] = config.get("sidebar-moc.mocPath") ?? [];
-    if (!paths.includes(e.fsPath)) {
-      paths.push(e.fsPath);
+    if (!paths.includes(pathService.uriToConfigPath(e.fsPath))) {
+      paths.push(pathService.uriToConfigPath(e.fsPath));
     }
-    paths = paths.map((o) => pathService.uriToConfigPath(o));
     config.update("sidebar-moc.mocPath", paths).then(() => {
       updateContext();
     });
@@ -125,12 +130,13 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand("sidebar-moc.remove-moc", (e: Uri) => {
     const config = vscode.workspace.getConfiguration();
     let paths: string[] = config.get("sidebar-moc.mocPath") ?? [];
-    if (paths.includes(e.fsPath)) {
-      paths = paths.filter((o) => o !== e.fsPath);
+    if (paths.includes(pathService.uriToConfigPath(e.fsPath))) {
+      paths = paths.filter((p) => p !== pathService.uriToConfigPath(e.fsPath));
     }
-    paths = paths.map((o) => pathService.uriToConfigPath(o));
     config.update("sidebar-moc.mocPath", paths).then(() => {
-      updateContext();
+      setTimeout(() => {
+        updateContext();
+      }, 100);
     });
   });
 }
