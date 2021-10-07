@@ -6,20 +6,6 @@ import { TOCTreeDataProvider } from "./contrib/toc-tree-data-provider";
 import { Utils, URI } from "vscode-uri";
 import { PathService } from "./services/path";
 
-function updateContext() {
-  const config = vscode.workspace.getConfiguration();
-  const mocPaths: string[] = config.get("sidebar-moc.mocPath") ?? [];
-  const fsPath = vscode.window.activeTextEditor?.document?.uri.fsPath;
-  if (!fsPath) {
-    return;
-  }
-  if (mocPaths.includes(fsPath)) {
-    vscode.commands.executeCommand("setContext", "inSideBarMoc", true);
-  } else {
-    vscode.commands.executeCommand("setContext", "inSideBarMoc", false);
-  }
-}
-
 function getConfigurationFile(): {
   target: vscode.ConfigurationTarget;
   fsPath?: string;
@@ -53,6 +39,20 @@ function getConfigurationFile(): {
 
 export async function activate(context: vscode.ExtensionContext) {
   const configurationFile = getConfigurationFile();
+  const pathService = new PathService(configurationFile.fsPath);
+  function updateContext() {
+    const config = vscode.workspace.getConfiguration();
+    const mocPaths: string[] = config.get("sidebar-moc.mocPath") ?? [];
+    const fsPath = vscode.window.activeTextEditor?.document?.uri.fsPath;
+    if (!fsPath) {
+      return;
+    }
+    if (mocPaths.includes(pathService.uriToConfigPath(fsPath))) {
+      vscode.commands.executeCommand("setContext", "inSideBarMoc", true);
+    } else {
+      vscode.commands.executeCommand("setContext", "inSideBarMoc", false);
+    }
+  }
   const tocService = new TocService(new PathService(configurationFile.fsPath));
   const treeDataProvider = new TOCTreeDataProvider(tocService);
   tocService.onTocChange(() => {
@@ -113,10 +113,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
   vscode.commands.registerCommand("sidebar-moc.add-moc", (e: Uri) => {
     const config = vscode.workspace.getConfiguration();
-    const paths: string[] = config.get("sidebar-moc.mocPath") ?? [];
+    let paths: string[] = config.get("sidebar-moc.mocPath") ?? [];
     if (!paths.includes(e.fsPath)) {
       paths.push(e.fsPath);
     }
+    paths = paths.map((o) => pathService.uriToConfigPath(o));
     config.update("sidebar-moc.mocPath", paths).then(() => {
       updateContext();
     });
@@ -127,6 +128,7 @@ export async function activate(context: vscode.ExtensionContext) {
     if (paths.includes(e.fsPath)) {
       paths = paths.filter((o) => o !== e.fsPath);
     }
+    paths = paths.map((o) => pathService.uriToConfigPath(o));
     config.update("sidebar-moc.mocPath", paths).then(() => {
       updateContext();
     });

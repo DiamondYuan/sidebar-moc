@@ -17,7 +17,9 @@ export class TocService {
 
   async updateConfig(files: string[]) {
     const toc: OutlineDataWithUri[] = [];
-    for (const iterator of files) {
+    for (const iterator of files.map((p) =>
+      this.pathService.configPathToUri(p)
+    )) {
       try {
         const uri = vscode.Uri.file(iterator);
         const root = (await loadAndParse(uri)) as any as OutlineRoot;
