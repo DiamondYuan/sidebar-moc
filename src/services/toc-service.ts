@@ -5,7 +5,7 @@ import { loadAndParse } from "../common/load-and-parse";
 
 export class TocService {
   public toc: OutlineDataWithUri[];
-  private handler: () => void = () => {};
+  private handler: () => void = () => { };
 
   constructor(private pathService: IPathService) {
     this.toc = [];
@@ -21,14 +21,13 @@ export class TocService {
       this.pathService.configPathToUri(p)
     )) {
       try {
-        console.log(iterator, "iterator");
         const uri = vscode.Uri.file(iterator);
         const root = (await loadAndParse(uri)) as any as OutlineRoot;
         toc.push({
           uri,
           data: root,
         });
-      } catch (error) {}
+      } catch (error) { }
     }
     this.toc = toc;
     this.handler();
@@ -43,7 +42,7 @@ export class TocService {
           uri: file,
           data: root,
         };
-      } catch (error) {}
+      } catch (error) { }
       this.handler();
     }
   }
